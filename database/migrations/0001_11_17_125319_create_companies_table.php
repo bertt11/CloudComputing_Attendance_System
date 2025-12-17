@@ -12,12 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         // database/migrations/xxxx_create_companies_table.php
-        Schema::create('companies', function (Blueprint $table) {
+                Schema::create('companies', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('password')->nullable(); // password untuk memilih perusahaan (hash)
+            $table->string('address')->nullable();
+
+            // TIDAK pakai foreign key dulu
+            $table->unsignedBigInteger('owner_id')->index();
+
             $table->timestamps();
         });
+
 
     }
 

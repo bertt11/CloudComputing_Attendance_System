@@ -1,48 +1,93 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\EmployeeDashboardController;
+use App\Http\Controllers\EmployeePermissionController;
 
-Route::get('/', [HomeController::class,'index'])->name('home');
 
-Route::get('/dashboard', [HomeController::class, 'dashboard'])
-    ->middleware('auth')
-    ->name('dashboard');
+Route::get('/', function () {
+    if (!Auth::check()) {
+        return redirect()->route('login');
+    }
 
-Route::middleware('auth')->group(function(){
-    // Owner routes
-    Route::middleware('role:owner')->prefix('owner')->name('owner.')->group(function(){
-   
-    Route::resource('companies', CompanyController::class)->only(['index','create','store','show']);
-
-    });
-
-    Route::middleware('auth')->group(function () {
-    Route::get('/profile', function () {
-            return view('profile.edit');
-        })->name('profile.edit');
-    });
-
-    // Admin routes
-    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function(){
-        Route::get('companies', [CompanyController::class,'select'])->name('companies.select');
-        Route::post('company/{company}/enter', [CompanyController::class,'enter'])->name('company.enter');
-        Route::get('company/{company}/employees', [EmployeeController::class,'index'])->name('company.employees');
-        Route::get('company/{company}/employees/create', [EmployeeController::class,'create'])->name('employees.create');
-        Route::post('company/{company}/employees', [EmployeeController::class,'store'])->name('employees.store');
-
-        Route::post('company/{company}/attendance/scan', [AttendanceController::class,'scan'])->name('attendance.scan');
-        Route::get('company/{company}/attendances', [AttendanceController::class,'index'])->name('attendances.index');
-    });
-
-    // Employee routes
-    Route::middleware('role:employee')->prefix('employee')->name('employee.')->group(function(){
-        Route::get('dashboard', [EmployeeController::class,'dashboard'])->name('dashboard');
-        Route::get('company/{company}', [EmployeeController::class,'showCompany'])->name('company.show');
-        Route::post('company/{company}/request-leave', [AttendanceController::class,'requestLeave'])->name('request.leave');
-    });
+    return match (Auth::user()->role) {
+        'owner'    => redirect()->route('owner.dashboard'),
+        'admin'    => redirect()->route('admin.dashboard'),
+        'employee' => redirect()->route('employee.dashboard'),
+        default    => abort(403),
+    };
 });
+
+Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->group(function () {
+
+    // dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
+
+    // companies
+    Route::get('/companies', [CompanyController::class, 'index'])
+        ->name('companies.index');
+
+    Route::get('/companies/create', [CompanyController::class, 'create'])
+        ->name('companies.create');
+
+    Route::post('/companies', [CompanyController::class, 'store'])
+        ->name('companies.store');
+
+    Route::get('/companies/{company}', [CompanyController::class, 'show'])
+        ->name('companies.show');
+
+    // employees
+    Route::get('/companies/{company}/employees/create',
+        [EmployeeController::class, 'create'])
+        ->name('employees.create');
+
+    Route::post('/companies/{company}/employees',
+        [EmployeeController::class, 'store'])
+        ->name('employees.store');
+
+    Route::patch('/employees/{employee}/role',
+        [EmployeeController::class, 'updateRole'])
+        ->name('employees.role');
+});
+
+
+        Route::middleware(['auth', 'role:admin'])->group(function () {
+
+            Route::get('/admin/dashboard', function () {
+                return redirect()->route('admin.attendances.index');
+            })->name('admin.dashboard');
+
+            Route::get(
+                '/admin/companies/{company}/attendances',
+                [\App\Http\Controllers\Admin\AttendanceController::class, 'index']
+            )->name('admin.attendances.index');
+
+            Route::patch(
+                '/admin/attendances/{attendance}',
+                [\App\Http\Controllers\Admin\AttendanceController::class, 'update']
+            )->name('admin.attendances.update');
+
+        });
+
+    Route::middleware(['auth','role:employee'])
+        ->prefix('employee')
+        ->name('employee.')
+        ->group(function () {
+
+        Route::get('/dashboard', [EmployeeDashboardController::class, 'index'])
+            ->name('dashboard');
+
+        Route::get('/permission', [EmployeePermissionController::class, 'create'])
+            ->name('permission.create');
+
+        Route::post('/permission', [EmployeePermissionController::class, 'store'])
+            ->name('permission.store');
+    });
+
 
 require __DIR__.'/auth.php';

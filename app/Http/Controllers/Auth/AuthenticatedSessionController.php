@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
+
 class AuthenticatedSessionController extends Controller
 {
     /**
@@ -18,30 +19,37 @@ class AuthenticatedSessionController extends Controller
     {
         return view('auth.login');
     }
-
     /**
-     * Handle an incoming authentication request.
-     */
-    public function store(LoginRequest $request): RedirectResponse
-    {
-        $request->authenticate();
-
-        $request->session()->regenerate();
-
-        return redirect()->intended(route('dashboard', absolute: false));
-    }
-
-    /**
-     * Destroy an authenticated session.
-     */
+ * Destroy an authenticated session.
+ */
     public function destroy(Request $request): RedirectResponse
     {
-        Auth::guard('web')->logout();
+        Auth::logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/login');
+    }
+
+
+        public function store(LoginRequest $request): RedirectResponse
+    {
+        $request->authenticate();
+        $request->session()->regenerate();
+
+        $user = Auth::user();
+
+        return match ($user->role) {
+            'owner' => redirect()->route('owner.dashboard'),
+            'admin' => redirect()->route(
+                'admin.attendances.index',
+                ['company' => $user->company_id]
+            ),
+
+            'employee' => redirect()->route('employee.dashboard'),
+            default => abort(403),
+        };
+
     }
 }
