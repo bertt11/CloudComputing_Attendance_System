@@ -33,6 +33,24 @@
                     Kelola izin →
                 </div>
             </div>
+            {{-- ABSENSI VIA UID --}}
+            <a href="{{ route('admin.absence.uid') }}"
+            class="p-6 bg-indigo-500/90 rounded-xl shadow
+                    transition transform hover:scale-105 hover:bg-indigo-500">
+
+                <div class="text-sm text-indigo-100">
+                    Absensi Manual (UID)
+                </div>
+
+                <div class="mt-2 text-2xl font-bold text-white">
+                    Scan / Input UID
+                </div>
+
+                <p class="mt-3 text-xs text-indigo-100">
+                    Absen cepat menggunakan UID karyawan →
+                </p>
+            </a>
+
 
             <p class="mt-4 text-sm text-yellow-100">
                 Izin dari karyawan yang membutuhkan persetujuan admin

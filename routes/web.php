@@ -112,6 +112,15 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
                 [App\Http\Controllers\Admin\PermissionApprovalController::class, 'reject']
             )->name('admin.permissions.reject');
 
+            Route::get('/admin/absence/uid',
+                [\App\Http\Controllers\Admin\UidAttendanceController::class, 'create']
+            )->name('admin.absence.uid');
+
+            Route::post('/admin/absence/uid',
+                [\App\Http\Controllers\Admin\UidAttendanceController::class, 'store']
+            )->name('admin.absence.uid.store');
+
+
         });
 
     Route::middleware(['auth','role:employee'])
