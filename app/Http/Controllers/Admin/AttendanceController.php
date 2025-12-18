@@ -4,27 +4,48 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
-use App\Models\Company;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AttendanceController extends Controller
 {
-    public function index(Company $company)
+    public function index()
     {
-        // admin hanya boleh lihat perusahaannya sendiri
-        if ($company->id !== Auth::user()->company_id) {
-            abort(403);
+        $admin = Auth::user();
+        $company = $admin->company;
+
+        // Ambil semua karyawan company admin
+        $employees = Employee::where('company_id', $company->id)->get();
+
+        /**
+         * Pastikan SETIAP karyawan punya absensi hari ini
+         * (logic bisnis HARUS di controller)
+         */
+        foreach ($employees as $emp) {
+            Attendance::firstOrCreate(
+                [
+                    'employee_id' => $emp->id,
+                    'date' => today(),
+                ],
+                [
+                    'company_id' => $company->id,
+                    'status' => 'absen',
+                ]
+            );
         }
 
-        $employees = $company->employees()->with([
+        // Reload relasi attendance hari ini
+        $employees->load([
             'attendances' => function ($q) {
                 $q->whereDate('date', today());
             }
-        ])->get();
+        ]);
 
-        return view('admin.attendances.index', compact('company', 'employees'));
+        return view('admin.attendances.index', compact(
+            'company',
+            'employees'
+        ));
     }
 
     public function update(Request $request, Attendance $attendance)
@@ -34,7 +55,7 @@ class AttendanceController extends Controller
         ]);
 
         $attendance->update([
-            'status' => $request->status
+            'status' => $request->status,
         ]);
 
         return back()->with('success', 'Status absensi diperbarui');

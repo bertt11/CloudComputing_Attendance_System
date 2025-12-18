@@ -17,6 +17,10 @@ class Attendance extends Model
         'proof_file',
         'note',
     ];
+    
+     protected $casts = [
+        'date' => 'date',
+    ];
 
     /**
      * Relasi ke Company

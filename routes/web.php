@@ -58,19 +58,32 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
 
         Route::middleware(['auth', 'role:admin'])->group(function () {
 
-            Route::get('/admin/dashboard', function () {
-                return redirect()->route('admin.attendances.index');
-            })->name('admin.dashboard');
+            Route::get('/admin/dashboard',
+                [App\Http\Controllers\Admin\AdminDashboardController::class, 'index']
+            )->name('admin.dashboard');
 
-            Route::get(
-                '/admin/companies/{company}/attendances',
-                [\App\Http\Controllers\Admin\AttendanceController::class, 'index']
+            Route::get('/admin/attendances',
+                [App\Http\Controllers\Admin\AttendanceController::class, 'index']
             )->name('admin.attendances.index');
+
 
             Route::patch(
                 '/admin/attendances/{attendance}',
                 [\App\Http\Controllers\Admin\AttendanceController::class, 'update']
             )->name('admin.attendances.update');
+
+            //approval izin
+            Route::get('/admin/permissions', 
+                [App\Http\Controllers\Admin\PermissionApprovalController::class, 'index']
+            )->name('admin.permissions.index');
+
+            Route::post('/admin/permissions/{attendance}/approve', 
+                [App\Http\Controllers\Admin\PermissionApprovalController::class, 'approve']
+            )->name('admin.permissions.approve');
+
+            Route::post('/admin/permissions/{attendance}/reject', 
+                [App\Http\Controllers\Admin\PermissionApprovalController::class, 'reject']
+            )->name('admin.permissions.reject');
 
         });
 
