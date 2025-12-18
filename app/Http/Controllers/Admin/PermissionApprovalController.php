@@ -55,15 +55,15 @@ class PermissionApprovalController extends Controller
         }
 
 
-        public function reject(Request $request, Attendance $attendance)
+            public function reject(Request $request, Attendance $attendance)
         {
             $request->validate([
-                'reason' => 'required|string|max:255',
+                'reject_reason' => 'required|string|max:255',
             ]);
 
             $attendance->update([
                 'status' => 'absen',
-                'rejected_reason' => $request->reason,
+                'rejected_reason' => $request->reject_reason,
             ]);
 
             Http::post(
@@ -73,7 +73,7 @@ class PermissionApprovalController extends Controller
                     'name'    => $attendance->employee->name,
                     'status'  => 'DITOLAK',
                     'date'    => now()->format('d M Y'),
-                    'message' => $request->reason,
+                    'message' => $request->reject_reason,
                 ]
             );
 
