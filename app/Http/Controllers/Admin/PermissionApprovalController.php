@@ -37,8 +37,8 @@ class PermissionApprovalController extends Controller
             ]);
 
             // 2. Kirim data ke AWS API Gateway
-            Http::withoutVerifying()
-         ->post(config('services.aws_email.endpoint'),
+            $response = Http::post(
+                config('services.aws_email.endpoint'),
                 [
                     'email'   => $attendance->employee->user->email,
                     'name'    => $attendance->employee->name,
@@ -47,6 +47,9 @@ class PermissionApprovalController extends Controller
                     'message' => 'Izin kamu telah disetujui admin'
                 ]
             );
+
+            // 3. Log (opsional tapi penting buat sidang)
+            logger()->info('AWS EMAIL RESPONSE', $response->json());
 
             return back()->with('success', 'Izin disetujui & request email dikirim ke AWS');
         }
@@ -63,8 +66,8 @@ class PermissionApprovalController extends Controller
                 'rejected_reason' => $request->reason,
             ]);
 
-             Http::withoutVerifying()
-             ->post(config('services.aws_email.endpoint'),
+            Http::post(
+                config('services.aws_email.endpoint'),
                 [
                     'email'   => $attendance->employee->user->email,
                     'name'    => $attendance->employee->name,

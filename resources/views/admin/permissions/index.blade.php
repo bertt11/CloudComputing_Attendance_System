@@ -147,12 +147,13 @@
 {{-- SCRIPT --}}
 <script>
 function openRejectModal(button) {
-    const id = button.dataset.id;
+    const id = button.getAttribute('data-id');
 
     const modal = document.getElementById('rejectModal');
     const form  = document.getElementById('rejectForm');
 
-    form.action = `/admin/permissions/${id}/reject`;
+    // SET ACTION DENGAN STRING BIASA (AMAN)
+    form.action = '/admin/permissions/' + id + '/reject';
 
     modal.classList.remove('hidden');
     modal.classList.add('flex');
@@ -164,4 +165,5 @@ function closeRejectModal() {
     modal.classList.remove('flex');
 }
 </script>
+
 @endsection
