@@ -33,20 +33,24 @@ class EmployeeController extends Controller
         }
 
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'uid'      => 'nullable|string|max:100',
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email',
             'password' => 'required|min:6',
-            'role' => 'required|in:admin,employee',
+            'role'     => 'required|in:admin,employee',
         ]);
+
 
         // USER (untuk login)
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
+            'name'       => $request->name,
+            'email'      => $request->email,
+            'uid'        => $request->uid, 
+            'password'   => Hash::make($request->password),
+            'role'       => $request->role,
             'company_id' => $company->id,
         ]);
+
 
         // EMPLOYEE (data kepegawaian)
         Employee::create([
@@ -57,9 +61,49 @@ class EmployeeController extends Controller
         ]);
 
         return redirect()
-            ->route('owner.companies.show', $company)
+            ->route('owner.employees.index', $company)
             ->with('success', 'Karyawan berhasil ditambahkan.');
     }
+
+        public function edit(Employee $employee)
+    {
+        if ($employee->company->owner_id !== Auth::id()) {
+            abort(403);
+        }
+
+        return view('owner.employees.editKaryawan', compact('employee'));
+    }
+
+        public function update(Request $request, Employee $employee)
+    {
+        if ($employee->company->owner_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $employee->user_id,
+            'uid'   => 'nullable|string|max:100',
+        ]);
+
+        // update user
+        $employee->user->update([
+            'name'  => $request->name,
+            'email' => $request->email,
+            'uid'   => $request->uid,
+        ]);
+
+        // update employee
+        $employee->update([
+            'name' => $request->name,
+        ]);
+
+        return redirect()
+            ->route('owner.employees.index')
+            ->with('success', 'Data karyawan berhasil diperbarui.');
+    }
+
+
 
     /**
      * Ubah role admin / employee

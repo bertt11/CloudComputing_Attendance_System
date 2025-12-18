@@ -59,9 +59,19 @@
 
         <div class="mb-12">
 
-            <h2 class="text-lg font-semibold text-indigo-300 mb-4">
-                {{ $company->name }}
-            </h2>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-indigo-300">
+                    {{ $company->name }}
+                </h2>
+
+                <a href="{{ route('owner.employees.create', $company) }}"
+                class="inline-flex items-center gap-2 px-4 py-1.5
+                        bg-indigo-600 hover:bg-indigo-700
+                        text-sm text-white rounded-lg shadow transition">
+                    + Tambah Karyawan
+                </a>
+            </div>
+
 
             <div class="bg-gray-800 rounded-xl shadow overflow-hidden">
 
@@ -93,9 +103,13 @@
 
                       <tr class="border-t border-gray-700 hover:bg-gray-700/40 transition">
                             {{-- NAMA --}}
-                            <td class="p-4 font-medium text-white">
-                                {{ $emp->name }}
+                            <td class="p-4 font-medium">
+                                <a href="{{ route('owner.employees.edit', $emp) }}"
+                                class="text-white hover:text-indigo-400 hover:underline transition">
+                                    {{ $emp->name }}
+                                </a>
                             </td>
+
 
                             {{-- EMAIL --}}
                             <td class="p-4 text-gray-300">

@@ -43,7 +43,7 @@ class AuthenticatedSessionController extends Controller
         return match ($user->role) {
             'owner' => redirect()->route('owner.dashboard'),
             'admin' => redirect()->route(
-                'admin.attendances.index',
+                'admin.dashboard',
                 ['company' => $user->company_id]
             ),
 

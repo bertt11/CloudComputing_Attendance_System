@@ -70,6 +70,15 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
             [CompanyController::class, 'destroy']
         )->name('companies.destroy');
 
+        Route::get('/employees/{employee}/edit',
+            [EmployeeController::class, 'edit']
+        )->name('employees.edit');
+
+        Route::patch('/employees/{employee}',
+            [EmployeeController::class, 'update']
+        )->name('employees.update');
+
+
 
 });
 
