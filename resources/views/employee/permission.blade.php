@@ -1,15 +1,16 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-xl mx-auto py-10 px-4">
+<div class="max-w-xl mx-auto py-12 px-4">
 
-    <div class="bg-white shadow rounded-lg p-6">
+    <div class="bg-gray-800 shadow-lg rounded-xl p-6">
 
-        <h1 class="text-xl font-semibold mb-2">
+        {{-- HEADER --}}
+        <h1 class="text-2xl font-semibold text-white mb-1">
             Ajukan Izin
         </h1>
 
-        <p class="text-sm text-gray-600 mb-6">
+        <p class="text-sm text-gray-400 mb-8">
             {{ $employee->name }} — {{ $employee->company->name }}
         </p>
 
@@ -18,31 +19,50 @@
               enctype="multipart/form-data">
             @csrf
 
-            <div class="mb-4">
-                <label class="text-sm font-medium">Keterangan</label>
+            {{-- KETERANGAN --}}
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-300 mb-2">
+                    Keterangan
+                </label>
+
                 <textarea name="note"
-                          class="border p-2 w-full rounded"
                           rows="3"
-                          placeholder="Contoh: sakit, urusan keluarga"></textarea>
+                          placeholder="Contoh: sakit, urusan keluarga"
+                          class="w-full rounded-lg bg-gray-900 border border-gray-700
+                                 text-gray-100 placeholder-gray-500
+                                 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
             </div>
 
-            <div class="mb-4">
-                <label class="text-sm font-medium">
-                    Upload Bukti (PDF / JPG / PNG)
+            {{-- FILE BUKTI --}}
+            <div class="mb-8">
+                <label class="block text-sm font-medium text-gray-300 mb-2">
+                    Upload Bukti
+                    <span class="text-xs text-gray-500">(PDF / JPG / PNG)</span>
                 </label>
+
                 <input type="file"
                        name="proof"
                        required
-                       class="border p-2 w-full rounded">
+                       class="block w-full text-sm text-gray-300
+                              file:mr-4 file:py-2 file:px-4
+                              file:rounded-lg file:border-0
+                              file:bg-indigo-600 file:text-white
+                              hover:file:bg-indigo-700
+                              cursor-pointer bg-gray-900 border border-gray-700 rounded-lg">
             </div>
 
-            <div class="flex justify-between">
+            {{-- ACTION --}}
+            <div class="flex justify-between items-center">
                 <a href="{{ route('employee.dashboard') }}"
-                   class="text-sm text-gray-600">
+                   class="text-sm text-gray-400 hover:text-white transition">
                     ← Kembali
                 </a>
 
-                <button class="bg-indigo-600 text-white px-4 py-2 rounded">
+                <button type="submit"
+                        class="px-5 py-2.5 rounded-lg
+                               bg-indigo-600 hover:bg-indigo-700
+                               text-white text-sm font-medium
+                               transition shadow">
                     Kirim Izin
                 </button>
             </div>

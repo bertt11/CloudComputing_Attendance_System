@@ -4,9 +4,24 @@
 
             {{-- LEFT --}}
             <div class="flex items-center gap-6">
-                {{-- Logo / App Name --}}
-                <a href="{{ route('owner.dashboard') }}"
-                   class="text-lg font-semibold text-gray-800 dark:text-gray-100">
+
+                {{-- Logo --}}
+                <a href="
+                    @auth
+                        @if(Auth::user()->role === 'owner')
+                            {{ route('owner.dashboard') }}
+                        @elseif(Auth::user()->role === 'admin')
+                            {{ route('admin.dashboard') }}
+                        @elseif(Auth::user()->role === 'employee')
+                            {{ route('employee.dashboard') }}
+                        @else
+                            /
+                        @endif
+                    @else
+                        /
+                    @endauth
+                "
+                class="text-lg font-semibold text-gray-800 dark:text-gray-100">
                     AttendanceSystem
                 </a>
 
@@ -18,25 +33,53 @@
                             Dashboard
                         </a>
 
-                         <a href="{{ route('owner.companies.index') }}"
-                            class="text-sm text-gray-600 hover:text-gray-800">
-                              Perusahaan
-                          </a>
+                        <a href="{{ route('owner.companies.index') }}"
+                           class="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            Perusahaan
+                        </a>
 
-                          <a href="{{ route('owner.employees.index') }}"
-                            class="text-sm text-gray-600 hover:text-gray-800">
-                              Karyawan
-                          </a>
-
-                        {{-- TAMPILKAN CREATE COMPANY SAJA --}}
-                        @if(Auth::user()->company_id === null)
-                            <a href="{{ route('owner.companies.create') }}"
-                               class="text-sm text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
-                                Buat Perusahaan
-                            </a>
-                        @endif
+                        <a href="{{ route('owner.employees.index') }}"
+                           class="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            Karyawan
+                        </a>
                     @endif
                 @endauth
+
+                {{-- ADMIN MENU --}}
+                @auth
+                    @if(Auth::user()->role === 'admin')
+                        <a href="{{ route('admin.dashboard') }}"
+                           class="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            Dashboard
+                        </a>
+
+                        <a href="{{ route('admin.permissions.index') }}"
+                           class="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            Kelola Izin
+                        </a>
+
+                        <a href="{{ route('admin.attendances.index') }}"
+                           class="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            Kelola Absensi
+                        </a>
+                    @endif
+                @endauth
+
+                {{-- EMPLOYEE MENU --}}
+                @auth
+                    @if(Auth::user()->role === 'employee')
+                        <a href="{{ route('employee.dashboard') }}"
+                           class="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            Dashboard
+                        </a>
+
+                        <a href="{{ route('employee.permission.create') }}"
+                           class="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            Ajukan Izin
+                        </a>
+                    @endif
+                @endauth
+
             </div>
 
             {{-- RIGHT --}}

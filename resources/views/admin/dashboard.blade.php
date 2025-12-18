@@ -1,53 +1,91 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-7xl mx-auto py-8 px-4">
+<div class="max-w-7xl mx-auto py-10 px-4">
 
-    <h1 class="text-2xl font-semibold text-gray-800 mb-6">
+    {{-- HEADER --}}
+    <h1 class="text-3xl font-semibold text-white">
         Dashboard Admin
     </h1>
+    <p class="mt-1 text-sm text-gray-400">
+        {{ auth()->user()->name }} • {{ auth()->user()->email }}
+    </p>
 
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+    {{-- GRID --}}
+    <div class="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {{-- Total Karyawan --}}
-        <div class="bg-white shadow rounded-lg p-6">
-            <div class="text-sm text-gray-500">
-                Total Karyawan
-            </div>
-            <div class="mt-2 text-3xl font-bold text-gray-800">
-                {{ $totalEmployees }}
-            </div>
-        </div>
-
-        {{-- Karyawan Izin --}}
+        {{-- IZIN (PRIORITAS) --}}
         <a href="{{ route('admin.permissions.index') }}"
-           class="bg-yellow-50 hover:bg-yellow-100 shadow rounded-lg p-6 transition">
-            <div class="text-sm text-yellow-700">
-                Karyawan Izin (Pending)
+           class="group lg:col-span-2 p-8 bg-yellow-500/90 rounded-xl shadow-lg
+                  transition transform hover:scale-[1.02] hover:bg-yellow-500">
+
+            <div class="flex items-center justify-between">
+                <div>
+                    <div class="text-sm text-yellow-100 uppercase tracking-wide">
+                        Izin Menunggu Persetujuan
+                    </div>
+                    <div class="mt-3 text-4xl font-bold text-gray-900">
+                        {{ $izinCount }}
+                    </div>
+                </div>
+
+                <div class="text-sm text-yellow-100">
+                    Kelola izin →
+                </div>
             </div>
-            <div class="mt-2 text-3xl font-bold text-yellow-800">
-                {{ $izinCount }}
-            </div>
-            <p class="text-xs text-yellow-600 mt-2">
-                Klik untuk cek persetujuan
+
+            <p class="mt-4 text-sm text-yellow-100">
+                Izin dari karyawan yang membutuhkan persetujuan admin
             </p>
         </a>
 
-        {{-- Karyawan Absen --}}
+        {{-- TOTAL KARYAWAN --}}
+        <div class="p-6 bg-gray-800 rounded-xl shadow">
+            <div class="text-sm text-gray-400">
+                Total Karyawan
+            </div>
+            <div class="mt-2 text-3xl font-bold text-white">
+                {{ $totalEmployees }}
+            </div>
+
+            <p class="mt-3 text-xs text-gray-500">
+                Seluruh karyawan dalam perusahaan
+            </p>
+        </div>
+
+        {{-- ABSEN --}}
         <a href="{{ route('admin.attendances.index') }}"
-           class="bg-red-50 hover:bg-red-100 shadow rounded-lg p-6 transition">
-            <div class="text-sm text-red-700">
+           class="p-6 bg-red-500/90 rounded-xl shadow
+                  transition transform hover:scale-105 hover:bg-red-500">
+
+            <div class="text-sm text-red-100">
                 Karyawan Absen Hari Ini
             </div>
-            <div class="mt-2 text-3xl font-bold text-red-800">
+            <div class="mt-2 text-3xl font-bold text-white">
                 {{ $absenCount }}
             </div>
-            <p class="text-xs text-red-600 mt-2">
-                Klik untuk lihat absensi
+
+            <p class="mt-3 text-xs text-red-100">
+                Cek & kelola absensi →
             </p>
         </a>
 
     </div>
+
+    <!-- {{-- QUICK NAV --}}
+    <div class="mt-10 flex flex-wrap gap-4">
+        <a href="{{ route('admin.permissions.index') }}"
+           class="px-5 py-2.5 rounded-lg bg-yellow-600 hover:bg-yellow-700
+                  text-gray-900 font-medium text-sm transition shadow">
+            Kelola Izin
+        </a>
+
+        <a href="{{ route('admin.attendances.index') }}"
+           class="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700
+                  text-white font-medium text-sm transition shadow">
+            Kelola Absensi
+        </a>
+    </div> -->
 
 </div>
 @endsection

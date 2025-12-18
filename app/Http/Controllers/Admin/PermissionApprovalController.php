@@ -24,24 +24,28 @@ class PermissionApprovalController extends Controller
     /**
      * Approve izin
      */
-    public function approve(Attendance $attendance)
+        public function approve(Attendance $attendance)
     {
         $attendance->update([
             'status' => 'izin',
+            'reject_reason' => null,
         ]);
 
-        return back()->with('success', 'Izin disetujui.');
+        return back()->with('success', 'Izin berhasil disetujui');
     }
 
-    /**
-     * Reject izin
-     */
-    public function reject(Attendance $attendance)
+    public function reject(Request $request, Attendance $attendance)
     {
+        $request->validate([
+            'reject_reason' => 'required|string|max:255',
+        ]);
+
         $attendance->update([
             'status' => 'absen',
+            'reject_reason' => $request->reject_reason,
         ]);
 
-        return back()->with('success', 'Izin ditolak.');
+        return back()->with('success', 'Izin ditolak');
     }
+
 }

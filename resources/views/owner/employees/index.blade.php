@@ -28,7 +28,12 @@
         <a href="{{ route('owner.employees.index', [
                 'status' => 'hadir',
                 'company' => request('company')
-            ]) }}">
+            ]) }}  "
+            class="px-4 py-1.5 rounded-full text-sm border
+           {{ $status==='hadir'
+                ? 'bg-blue-500 text-gray-900'
+                : 'border-blue-500 text-blue-300 hover:bg-blue-900/40' }}">
+
             Hadir
         </a>
 
@@ -66,8 +71,10 @@
                             <th class="p-4 text-left font-medium">Nama</th>
                             <th class="p-4 text-left font-medium">Email</th>
                             <th class="p-4 text-left font-medium">Status Hari Ini</th>
+                            <th class="p-4 text-left font-medium">Role</th>
                         </tr>
                     </thead>
+
 
                     <tbody>
                     @php $hasData = false; @endphp
@@ -84,17 +91,19 @@
                             $hasData = true;
                         @endphp
 
-                       <tr class="border-t border-gray-700 hover:bg-gray-700/40 transition">
+                      <tr class="border-t border-gray-700 hover:bg-gray-700/40 transition">
+                            {{-- NAMA --}}
                             <td class="p-4 font-medium text-white">
                                 {{ $emp->name }}
                             </td>
 
+                            {{-- EMAIL --}}
                             <td class="p-4 text-gray-300">
                                 {{ $emp->user->email ?? '-' }}
                             </td>
 
+                            {{-- STATUS --}}
                             <td class="p-4 flex items-center gap-3">
-                                {{-- STATUS BADGE --}}
                                 <span class="
                                     inline-flex px-3 py-1 rounded-full text-xs font-semibold
                                     @if($todayStatus==='hadir') bg-blue-500/20 text-blue-300
@@ -105,7 +114,6 @@
                                     {{ ucfirst($todayStatus) }}
                                 </span>
 
-                                {{-- LINK BUKTI IZIN --}}
                                 @if($todayStatus === 'izin' && $attendance?->proof_file)
                                     <a href="{{ $attendance->proof_file }}"
                                     target="_blank"
@@ -114,7 +122,39 @@
                                     </a>
                                 @endif
                             </td>
+
+                            {{-- ROLE ACTION --}}
+                            <td class="p-4">
+                                @if($emp->user)
+                                <form method="POST"
+                                    action="{{ route('owner.employees.role', $emp) }}"
+                                    onsubmit="return confirm('Yakin ingin mengubah role karyawan ini?')">
+                                    @csrf
+                                    @method('PATCH')
+
+                                    <select name="role"
+                                            class="bg-gray-900 border border-gray-600 text-sm rounded px-2 py-1
+                                                text-gray-200 focus:ring-indigo-500"
+                                            onchange="this.form.submit()">
+
+                                        <option value="employee"
+                                            @selected($emp->user->role === 'employee')>
+                                            Employee
+                                        </option>
+
+                                        <option value="admin"
+                                            @selected($emp->user->role === 'admin')>
+                                            Admin
+                                        </option>
+
+                                    </select>
+                                </form>
+                                @else
+                                    <span class="text-xs text-gray-500 italic">No user</span>
+                                @endif
+                            </td>
                         </tr>
+
 
                     @endforeach
 
