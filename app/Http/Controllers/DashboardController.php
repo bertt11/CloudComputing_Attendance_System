@@ -2,36 +2,53 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Attendance;
 use App\Models\Company;
 use App\Models\Employee;
+use App\Models\Attendance;
 use Illuminate\Support\Facades\Auth;
+use App\Services\AttendanceService;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
+        $ownerId = Auth::id();
 
-        // total perusahaan milik owner
-        $companyCount = Company::where('owner_id', $user->id)->count();
+        // Ambil semua perusahaan milik owner
+        $companies = Company::where('owner_id', $ownerId)->get();
+        $companyIds = $companies->pluck('id');
 
-        // total karyawan dari semua perusahaan owner
-        $employeeCount = Employee::whereIn(
-            'company_id',
-            Company::where('owner_id', $user->id)->pluck('id')
-        )->count();
+        foreach ($companyIds as $companyId) {
+            AttendanceService::ensureTodayAttendance($companyId);
+        }
 
-        // absensi hari ini (dari semua perusahaan owner)
-        $todayAttendance = Attendance::whereIn(
-            'company_id',
-            Company::where('owner_id', $user->id)->pluck('id')
-        )->whereDate('date', today())->count();
+        $companyCount = $companyIds->count();
+
+        $employeeCount = Employee::whereIn('company_id', $companyIds)->count();
+
+        $today = today();
+
+        $hadirToday = Attendance::whereIn('company_id', $companyIds)
+            ->whereDate('date', $today)
+            ->where('status', 'hadir')
+            ->count();
+
+        $izinToday = Attendance::whereIn('company_id', $companyIds)
+            ->where('status', 'izin')
+            ->whereDate('date', $today)
+            ->count();
+
+        $absenToday = Attendance::whereIn('company_id', $companyIds)
+            ->where('status', 'absen')
+            ->whereDate('date', $today)
+            ->count();
 
         return view('owner.dashboard', compact(
             'companyCount',
             'employeeCount',
-            'todayAttendance'
+            'hadirToday',
+            'izinToday',
+            'absenToday'
         ));
     }
 }

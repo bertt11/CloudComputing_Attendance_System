@@ -53,6 +53,24 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
     Route::patch('/employees/{employee}/role',
         [EmployeeController::class, 'updateRole'])
         ->name('employees.role');
+        
+        Route::get('/employees', 
+            [\App\Http\Controllers\Owner\EmployeeListController::class, 'index']
+        )->name('employees.index');
+
+        Route::get('/companies/{company}/edit',
+         [CompanyController::class, 'edit']
+        )->name('companies.edit');
+
+        Route::put('/companies/{company}',
+            [CompanyController::class, 'update']
+        )->name('companies.update');
+
+        Route::delete('/companies/{company}',
+            [CompanyController::class, 'destroy']
+        )->name('companies.destroy');
+
+
 });
 
 

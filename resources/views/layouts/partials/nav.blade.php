@@ -23,6 +23,11 @@
                               Perusahaan
                           </a>
 
+                          <a href="{{ route('owner.employees.index') }}"
+                            class="text-sm text-gray-600 hover:text-gray-800">
+                              Karyawan
+                          </a>
+
                         {{-- TAMPILKAN CREATE COMPANY SAJA --}}
                         @if(Auth::user()->company_id === null)
                             <a href="{{ route('owner.companies.create') }}"

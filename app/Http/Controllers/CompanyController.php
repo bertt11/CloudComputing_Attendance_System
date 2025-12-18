@@ -32,25 +32,20 @@ class CompanyController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'address' => 'nullable|string|max:255',
         ]);
 
-        $company = Company::create([
+        Company::create([
             'name' => $request->name,
-            'address' => $request->description,
+            'address' => $request->address,
             'owner_id' => Auth::id(),
         ]);
 
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-        $user->update([
-            'company_id' => $company->id
-        ]);
-
         return redirect()
-            ->route('owner.dashboard')
-            ->with('success', 'Perusahaan berhasil dibuat.');
+            ->route('owner.companies.index')
+            ->with('success', 'Perusahaan berhasil dibuat');
     }
+
 
     /**
      * Detail perusahaan + list karyawan
@@ -65,4 +60,36 @@ class CompanyController extends Controller
 
         return view('owner.companies.show', compact('company', 'employees'));
     }
+
+        public function edit(Company $company)
+    {
+        return view('owner.companies.edit', compact('company'));
+    }
+
+    public function update(Request $request, Company $company)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'address' => 'nullable|string|max:255',
+        ]);
+
+        $company->update([
+            'name' => $request->name,
+            'address' => $request->address,
+        ]);
+
+        return redirect()
+            ->route('owner.companies.index')
+            ->with('success', 'Perusahaan berhasil diperbarui');
+    }
+
+    public function destroy(Company $company)
+    {
+        $company->delete();
+
+        return redirect()
+            ->route('owner.companies.index')
+            ->with('success', 'Perusahaan berhasil dihapus');
+    }
+
 }
