@@ -13,6 +13,10 @@ return [
     | a conventional file to locate the various service credentials.
     |
     */
+    'aws_email' => [
+        'endpoint' => env('AWS_EMAIL_API'),
+    ],
+
 
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
