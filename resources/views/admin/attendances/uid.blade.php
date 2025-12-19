@@ -32,18 +32,6 @@
             </div>
         @endif
 
-        {{-- FORM --}}
-        <form method="POST" action="{{ route('admin.absence.uid.store') }}">
-            @csrf
-
-            <input type="text"
-        name="uid"
-        id="uidInput"
-        value="{{ $lastAttendance?->employee?->user?->uid }}"
-        readonly
-        class="w-full mb-4 rounded bg-gray-700 text-white
-                border border-gray-600 p-3">
-
 
             <button
                 class="w-full py-3 rounded-lg bg-indigo-600
