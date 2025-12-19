@@ -35,7 +35,7 @@
                        readonly
                        placeholder="Silakan scan kartu RFID"
                        class="w-full rounded-md bg-gray-900 border border-gray-600
-                              text-gray-200 px-3 py-2 cursor-not-allowed">
+                              text-gray-200 px-3 py-2 ">
             </div>
 
             {{-- BUTTON --}}
