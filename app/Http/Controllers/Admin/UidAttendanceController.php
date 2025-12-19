@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class UidAttendanceController extends Controller
 {
@@ -41,22 +42,16 @@ class UidAttendanceController extends Controller
      */
     public function storeFromIoT(Request $request)
     {
-        Log::info('UID FROM IOT', $request->all());
-
-        // OPTIONAL: API KEY CHECK (SANGAT DISARANKAN)
         if ($request->header('x-api-key') !== config('services.iot.api_key')) {
-            Log::warning('INVALID IOT API KEY');
-            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+            return response()->json(['success' => false], 401);
         }
 
-        if (!$request->uid) {
-            return response()->json([
-                'success' => false,
-                'message' => 'UID kosong'
-            ], 400);
-        }
+        Cache::put('last_scanned_uid', $request->uid, now()->addMinutes(5));
 
-        return $this->processUid($request->uid, false);
+        return response()->json([
+            'success' => true,
+            'uid' => $request->uid
+        ]);
     }
 
     /**

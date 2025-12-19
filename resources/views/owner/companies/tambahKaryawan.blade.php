@@ -100,3 +100,21 @@
     </div>
 </div>
 @endsection
+
+<script>
+    setInterval(async () => {
+        try {
+            const res = await fetch('/api/last-uid');
+            const data = await res.json();
+
+            if (data.uid) {
+                const input = document.querySelector('input[name="uid"]');
+                if (input && input.value !== data.uid) {
+                    input.value = data.uid;
+                }
+            }
+        } catch (e) {
+            console.log('Menunggu UID...');
+        }
+    }, 1500);
+</script>
