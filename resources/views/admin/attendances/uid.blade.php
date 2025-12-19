@@ -30,11 +30,13 @@
             @csrf
 
             <input type="text"
-                   name="uid"
-                   autofocus
-                   placeholder="Contoh: UID123456"
-                   class="w-full mb-4 rounded bg-gray-700 text-white
-                          border border-gray-600 p-3 focus:ring-indigo-500">
+        name="uid"
+        id="uidInput"
+        value="{{ $lastAttendance?->employee?->user?->uid }}"
+        readonly
+        class="w-full mb-4 rounded bg-gray-700 text-white
+                border border-gray-600 p-3">
+
 
             <button
                 class="w-full py-3 rounded-lg bg-indigo-600
@@ -46,3 +48,10 @@
     </div>
 </div>
 @endsection
+
+<script>
+    setTimeout(() => {
+        window.location.reload();
+    }, 3000);
+</script>
+

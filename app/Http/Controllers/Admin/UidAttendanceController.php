@@ -4,14 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\Employee;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class UidAttendanceController extends Controller
 {
     /**
-     * Form input UID
+     * FORM UI ADMIN
      */
     public function create()
     {
@@ -19,7 +19,7 @@ class UidAttendanceController extends Controller
     }
 
     /**
-     * Proses absen via UID
+     * DARI FORM MANUAL (ADMIN)
      */
     public function store(Request $request)
     {
@@ -27,14 +27,50 @@ class UidAttendanceController extends Controller
             'uid' => 'required|string'
         ]);
 
-        // Cari user berdasarkan UID
-        $user = User::where('uid', $request->uid)->first();
+        return $this->processUid($request->uid, true);
+    }
 
-        if (!$user || !$user->employee) {
-            return back()->with('error', 'UID tidak ditemukan');
+    /**
+     * DARI IOT (AWS LAMBDA)
+     */
+    public function storeFromIoT(Request $request)
+    {
+        Log::info('UID FROM IOT', $request->all());
+
+        // OPTIONAL: API KEY CHECK (SANGAT DISARANKAN)
+        if ($request->header('x-api-key') !== config('services.iot.api_key')) {
+            Log::warning('INVALID IOT API KEY');
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
         }
 
-        // Cek absensi hari ini
+        if (!$request->uid) {
+            return response()->json([
+                'success' => false,
+                'message' => 'UID kosong'
+            ], 400);
+        }
+
+        return $this->processUid($request->uid, false);
+    }
+
+    /**
+     * LOGIC UTAMA (DIPAKAI KEDUA JALUR)
+     */
+    private function processUid(string $uid, bool $fromUI)
+    {
+        $user = User::where('uid', $uid)->with('employee')->first();
+
+        if (!$user || !$user->employee) {
+            Log::warning('UID NOT FOUND', ['uid' => $uid]);
+
+            return $fromUI
+                ? back()->with('error', 'UID tidak ditemukan')
+                : response()->json([
+                    'success' => false,
+                    'message' => 'UID tidak ditemukan'
+                ], 404);
+        }
+
         Attendance::updateOrCreate(
             [
                 'employee_id' => $user->employee->id,
@@ -45,6 +81,17 @@ class UidAttendanceController extends Controller
             ]
         );
 
-        return back()->with('success', 'Absensi berhasil dicatat');
+        Log::info('ATTENDANCE SUCCESS', [
+            'uid' => $uid,
+            'employee' => $user->employee->name
+        ]);
+
+        return $fromUI
+            ? back()->with('success', 'Absensi berhasil dicatat')
+            : response()->json([
+                'success' => true,
+                'name' => $user->employee->name,
+                'date' => now()->toDateString()
+            ]);
     }
 }

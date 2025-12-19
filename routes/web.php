@@ -121,6 +121,8 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
             )->name('admin.absence.uid.store');
 
 
+
+
         });
 
     Route::middleware(['auth','role:employee'])

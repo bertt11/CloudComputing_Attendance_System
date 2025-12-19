@@ -17,6 +17,10 @@ return [
         'endpoint' => env('AWS_EMAIL_API'),
     ],
 
+    'iot' => [
+        'api_key' => env('IOT_API_KEY'),
+    ],
+
 
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
