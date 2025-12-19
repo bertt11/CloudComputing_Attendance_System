@@ -6,11 +6,18 @@
     <div class="bg-gray-800 rounded-xl shadow p-6">
 
         <h1 class="text-xl font-semibold text-white mb-1">
-            Absensi Manual
+            Absensi
         </h1>
-        <p class="text-sm text-gray-400 mb-6">
-            Masukkan UID karyawan untuk absen
-        </p>
+        <div class="mb-4">
+                <label class="block text-sm text-gray-300 mb-1">
+                   MASUKAN UID (RFID / Kode Unik)
+                </label>
+                <input type="text"
+                       name="uid"
+                       class="w-full rounded-md bg-gray-900 border border-gray-600
+                              text-gray-200 px-3 py-2
+                              focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
 
         {{-- ALERT --}}
         @if(session('success'))
@@ -50,8 +57,19 @@
 @endsection
 
 <script>
-    setTimeout(() => {
-        window.location.reload();
-    }, 3000);
-</script>
+    setInterval(async () => {
+        try {
+            const res = await fetch('/api/last-uid');
+            const data = await res.json();
 
+            if (data.uid) {
+                const input = document.querySelector('input[name="uid"]');
+                if (input && input.value !== data.uid) {
+                    input.value = data.uid;
+                }
+            }
+        } catch (e) {
+            console.log('Menunggu UID...');
+        }
+    }, 1500);
+</script>
