@@ -32,7 +32,9 @@
             </div>
         @endif
 
-
+        {{-- FORM --}}
+        <form method="POST" action="{{ route('admin.absence.uid.store') }}">
+            @csrf
             <button
                 class="w-full py-3 rounded-lg bg-indigo-600
                        hover:bg-indigo-700 text-white font-semibold">
