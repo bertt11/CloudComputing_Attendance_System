@@ -12,11 +12,17 @@ class UidAttendanceController extends Controller
 {
     /**
      * FORM UI ADMIN
-     */
-    public function create()
-    {
-        return view('admin.attendances.uid');
-    }
+            */
+
+        public function create()
+        {
+            $lastAttendance = Attendance::with('employee.user')
+                ->latest()
+                ->first();
+
+            return view('admin.attendances.uid', compact('lastAttendance'));
+        }
+
 
     /**
      * DARI FORM MANUAL (ADMIN)
