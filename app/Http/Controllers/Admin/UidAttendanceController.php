@@ -78,6 +78,7 @@ class UidAttendanceController extends Controller
                 'date' => now()->toDateString(),
             ],
             [
+                'company_id' => $user->employee->company_id,
                 'status' => 'hadir',
             ]
         );
